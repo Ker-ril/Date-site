@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Побачення? 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFE9F0;
+    --bg-deep: #FFD3E1;
+    --card: #FFF8FA;
+    --ink: #5C2438;
+    --ink-soft: #8A4A5E;
+    --rose: #E8547C;
+    --rose-deep: #C9184A;
+    --gold: #F4B183;
+    --line: rgba(92,36,56,0.12);
+    --shadow: 0 20px 50px rgba(201,24,74,0.15);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  html,body{
+    min-height:100vh;
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 15%, #FFF3F7 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, #FFDCE8 0%, transparent 50%),
+      var(--bg);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* floating hearts */
+  .hearts-field{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .drift-heart{
+    position:absolute; bottom:-10%;
+    font-size:22px;
+    opacity:0.35;
+    animation: floatUp linear infinite;
+    color: var(--rose);
+    filter: drop-shadow(0 2px 4px rgba(201,24,74,0.15));
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0;}
+    10%{opacity:0.4;}
+    90%{opacity:0.3;}
+    100%{ transform: translateY(-115vh) translateX(var(--drift,20px)) rotate(25deg); opacity:0;}
+  }
+
+  .stage{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding: 32px 18px;
+  }
+
+  .card{
+    width:100%; max-width:520px;
+    background:var(--card);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    padding:40px 34px 34px;
+    position:relative;
+    border:1px solid var(--line);
+    animation: riseIn 0.55s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes riseIn{
+    from{opacity:0; transform: translateY(18px) scale(0.98);}
+    to{opacity:1; transform:none;}
+  }
+
+  .progress{
+    display:flex; gap:8px; justify-content:center; margin-bottom:26px;
+  }
+  .dot{
+    width:9px; height:9px; border-radius:50%;
+    background: var(--line);
+    transition: all .35s ease;
+  }
+  .dot.active{ background: var(--rose); width:26px; border-radius:6px; }
+  .dot.done{ background: var(--gold); }
+
+  .eyebrow{
+    font-family:'Caveat', cursive;
+    font-size:22px;
+    color:var(--rose-deep);
+    text-align:center;
+    margin:0 0 2px;
+    display:block;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:32px;
+    text-align:center;
+    margin:0 0 8px;
+    line-height:1.15;
+    color:var(--ink);
+  }
+  .sub{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:15px;
+    margin:0 0 28px;
+  }
+
+  /* step 1: dates */
+  .date-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .date-pill{
+    border:1.5px solid var(--line);
+    background:#fff;
+    border-radius:16px;
+    padding:12px 4px;
+    text-align:center;
+    cursor:pointer;
+    transition: all .18s ease;
+    user-select:none;
+  }
+  .date-pill .dow{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); display:block;}
+  .date-pill .dnum{ font-family:'Fraunces', serif; font-size:20px; font-weight:600; display:block; margin-top:2px;}
+  .date-pill:hover{ border-color:var(--rose); transform: translateY(-2px); }
+  .date-pill.selected{
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    border-color: transparent;
+    color:#fff;
+    box-shadow: 0 10px 20px rgba(201,24,74,0.3);
+  }
+
+  .custom-date{
+    margin-top:14px; text-align:center;
+  }
+  .custom-date label{ font-size:13px; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  .custom-date input[type=date]{
+    font-family:'Quicksand', sans-serif;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:9px 12px;
+    font-size:14px;
+    color:var(--ink);
+    background:#fff;
+  }
+
+  /* step 2: activities */
+  .activity-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  .activity{
+    border:1.5px solid var(--line);
+    background:#fff;
+    border-radius:18px;
+    padding:16px 12px;
+    text-align:center;
+    cursor:pointer;
+    transition: all .18s ease;
+  }
+  .activity .ico{ font-size:26px; display:block; margin-bottom:6px;}
+  .activity .lbl{ font-size:14px; font-weight:600;}
+  .activity:hover{ transform: translateY(-2px); border-color:var(--rose);}
+  .activity.selected{
+    background: linear-gradient(135deg, #FFF0F5, #FFE0EB);
+    border-color: var(--rose);
+    box-shadow: 0 8px 18px rgba(201,24,74,0.18);
+  }
+
+  .custom-activity{ margin-top:14px; }
+  .custom-activity input{
+    width:100%;
+    font-family:'Quicksand', sans-serif;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:11px 14px;
+    font-size:14px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .custom-activity input:focus{ outline:none; border-color:var(--rose); }
+
+  /* buttons */
+  .actions{
+    display:flex; gap:10px; margin-top:28px;
+  }
+  button{
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    border-radius:14px;
+    padding:13px 18px;
+    cursor:pointer;
+    transition: all .18s ease;
+  }
+  .btn-back{
+    background: transparent;
+    color: var(--ink-soft);
+    border:1.5px solid var(--line);
+    flex: 0 0 auto;
+  }
+  .btn-back:hover{ background:#fff; }
+  .btn-next{
+    flex:1;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color:#fff;
+    box-shadow: 0 10px 24px rgba(201,24,74,0.28);
+  }
+  .btn-next:disabled{
+    background: #EBD3DB;
+    color:#fff;
+    box-shadow:none;
+    cursor:not-allowed;
+  }
+  .btn-next:not(:disabled):hover{ transform: translateY(-2px); box-shadow: 0 14px 28px rgba(201,24,74,0.35);}
+
+  /* step 3: confirmation */
+  .confirm-wrap{ text-align:center; }
+  .stamp{
+    width:78px; height:78px;
+    margin:0 auto 18px;
+    border-radius:50%;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    display:flex; align-items:center; justify-content:center;
+    font-size:34px;
+    box-shadow: 0 14px 30px rgba(201,24,74,0.35);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.06); }
+  }
+  .summary{
+    background: #FFF3F7;
+    border:1.5px dashed var(--rose);
+    border-radius:18px;
+    padding:20px;
+    margin: 20px 0 6px;
+    text-align:left;
+  }
+  .summary-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:14px;
+  }
+  .summary-row:last-child{ border-bottom:none; }
+  .summary-row .k{ color:var(--ink-soft); }
+  .summary-row .v{ font-weight:700; font-family:'Fraunces', serif; font-size:16px; }
+
+  .note{
+    font-family:'Caveat', cursive;
+    font-size:20px;
+    color:var(--rose-deep);
+    margin-top:16px;
+  }
+
+  @media (max-width:420px){
+    .card{ padding:30px 22px 26px; border-radius:22px; }
+    h1{ font-size:26px; }
+    .date-grid{ grid-template-columns: repeat(4, 1fr); gap:8px;}
+    .activity-grid{ grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .drift-heart, .card, .stamp{ animation:none !important; }
+  }
+
+  /* floating compliment button */
+  .fab{
+    position:fixed;
+    right:22px; bottom:22px;
+    z-index:5;
+    width:58px; height:58px;
+    border-radius:50%;
+    background: linear-gradient(135deg, var(--gold), var(--rose));
+    color:#fff;
+    border:none;
+    font-size:24px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 12px 26px rgba(201,24,74,0.35);
+    animation: fabPulse 2.2s ease-in-out infinite;
+  }
+  .fab:hover{ transform: scale(1.08); }
+  @keyframes fabPulse{
+    0%,100%{ box-shadow: 0 12px 26px rgba(201,24,74,0.35); }
+    50%{ box-shadow: 0 12px 32px rgba(201,24,74,0.55); }
+  }
+
+  .compliment-popup{
+    position:fixed;
+    right:22px; bottom:92px;
+    z-index:6;
+    max-width:260px;
+    background: var(--card);
+    border:1.5px solid var(--rose);
+    border-radius:18px;
+    padding:16px 18px;
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:16px;
+    line-height:1.4;
+    color:var(--ink);
+    box-shadow: var(--shadow);
+    opacity:0;
+    transform: translateY(10px) scale(0.96);
+    pointer-events:none;
+    transition: all .28s cubic-bezier(.2,.8,.2,1);
+  }
+  .compliment-popup.show{
+    opacity:1;
+    transform:none;
+  }
+
+  @media (max-width:420px){
+    .fab{ right:16px; bottom:16px; width:52px; height:52px; font-size:20px;}
+    .compliment-popup{ right:16px; bottom:80px; max-width:210px; font-size:15px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-field" id="heartsField"></div>
+
+<div class="stage">
+  <div class="card" id="card">
+
+    <div class="progress">
+      <div class="dot" data-dot="1"></div>
+      <div class="dot" data-dot="2"></div>
+      <div class="dot" data-dot="3"></div>
+    </div>
+
+    <div id="stepContent"></div>
+
+  </div>
+</div>
+
+<button class="fab" id="complimentFab" title="Натисни мене">🎁</button>
+<div class="compliment-popup" id="complimentPopup"></div>
+
+<script>
+  // ====== НАЛАШТУВАННЯ (заміни на свої) ======
+  const CONFIG = {
+    // Telegram: створи бота через @BotFather -> отримаєш TELEGRAM_BOT_TOKEN
+    // дізнатись свій CHAT_ID: напиши боту /start, потім відкрий
+    // https://api.telegram.org/bot<TOKEN>/getUpdates і знайди "chat":{"id": ...}
+    TELEGRAM_BOT_TOKEN: '8880595303:AAE61J9S5Xbuj83HyJkwjPLdP4O-EeuzkOk',
+    TELEGRAM_CHAT_ID: '389950886',
+  };
+
+  // ====== компліменти для кнопки-подарунка (редагуй як хочеш) ======
+  const compliments = [
+    'Твоя посмішка — це найкраще, що трапляється зі мною за день 🥹',
+    'Ти навіть не уявляєш, наскільки ти особлива людина',
+    'Мені подобається, як ти дивишся на світ — з добротою і цікавістю',
+    'Поруч з тобою будь-який день стає кращим',
+    'Ти найтепліша людина, яку я знаю',
+    'Твій сміх — мій улюблений звук',
+    'Я захоплююсь тим, яка ти сильна і водночас ніжна',
+    'Ти заслуговуєш на всі гарні речі, що трапляються в житті',
+  ];
+  let lastComplimentIdx = -1;
+  function showCompliment(){
+    let idx;
+    do { idx = Math.floor(Math.random()*compliments.length); }
+    while(compliments.length>1 && idx===lastComplimentIdx);
+    lastComplimentIdx = idx;
+    const popup = document.getElementById('complimentPopup');
+    popup.textContent = compliments[idx];
+    popup.classList.add('show');
+    clearTimeout(showCompliment._t);
+    showCompliment._t = setTimeout(()=>popup.classList.remove('show'), 5000);
+  }
+  document.getElementById('complimentFab').addEventListener('click', showCompliment);
+
+  // ====== сповіщення в Telegram, коли вибір підтверджено ======
+  async function sendTelegramNotification(dateLabel, activity){
+    if(CONFIG.TELEGRAM_BOT_TOKEN.includes('ВСТАВ') || CONFIG.TELEGRAM_CHAT_ID.includes('ВСТАВ')) return;
+    const text = `💌 Вона обрала!\nДата: ${dateLabel}\nПлан: ${activity}`;
+    try{
+      await fetch(`https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ chat_id: CONFIG.TELEGRAM_CHAT_ID, text })
+      });
+    }catch(e){ /* тихо ігноруємо, якщо немає інтернету чи налаштувань */ }
+  }
+
+  // ---------- floating hearts background ----------
+  const field = document.getElementById('heartsField');
+  const heartChars = ['💗','💕','💖','♡'];
+  for(let i=0;i<16;i++){
+    const h = document.createElement('span');
+    h.className='drift-heart';
+    h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    h.style.left = Math.random()*100+'%';
+    h.style.fontSize = (14+Math.random()*20)+'px';
+    h.style.setProperty('--drift', (Math.random()*80-40)+'px');
+    h.style.animationDuration = (10+Math.random()*10)+'s';
+    h.style.animationDelay = (Math.random()*10)+'s';
+    field.appendChild(h);
+  }
+
+  // ---------- state ----------
+  const state = { dateLabel:null, activity:null };
+
+  const dow = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const today = new Date();
+  const dateOptions = [];
+  for(let i=1;i<=7;i++){
+    const d = new Date(today);
+    d.setDate(today.getDate()+i);
+    dateOptions.push(d);
+  }
+
+  const activities = [
+    {ico:'🎬', label:'Кіно'},
+    {ico:'🌆', label:'Прогулянка'},
+    {ico:'🍝', label:'Вечеря'},
+    {ico:'🧺', label:'Пікнік'},
+    {ico:'☕', label:'Кава'},
+    {ico:'🎨', label:'Щось творче'},
+    {ico:'🍿', label:'залетіти переглянути щось разом'},
+  ];
+
+  let step = 1;
+
+  function setDots(){
+    document.querySelectorAll('.dot').forEach(dot=>{
+      const n = +dot.dataset.dot;
+      dot.classList.toggle('active', n===step);
+      dot.classList.toggle('done', n<step);
+    });
+  }
+
+  function render(){
+    setDots();
+    const content = document.getElementById('stepContent');
+    const card = document.getElementById('card');
+    card.style.animation = 'none'; void card.offsetWidth; card.style.animation = '';
+
+    if(step===1){
+      content.innerHTML = `
+        <span class="eyebrow">Привітки сонце:-) </span>
+        <h1>Коли тобі було зручно сходити <br>на побачення? 💌</h1>
+        <p class="sub">Обери день, який тобі підходить</p>
+        <div class="date-grid" id="dateGrid"></div>
+        <div class="custom-date">
+          <label>або вибери свою дату:</label>
+          <input type="date" id="customDate">
+        </div>
+        <div class="actions">
+          <button class="btn-next" id="nextBtn" disabled>Далі →</button>
+        </div>
+      `;
+      const grid = document.getElementById('dateGrid');
+      dateOptions.forEach(d=>{
+        const pill = document.createElement('div');
+        pill.className='date-pill';
+        pill.innerHTML = `<span class="dow">${dow[d.getDay()]}</span><span class="dnum">${d.getDate()}</span>`;
+        const label = `${dow[d.getDay()]}, ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+        pill.addEventListener('click', ()=>{
+          document.querySelectorAll('.date-pill').forEach(p=>p.classList.remove('selected'));
+          pill.classList.add('selected');
+          document.getElementById('customDate').value='';
+          state.dateLabel = label;
+          document.getElementById('nextBtn').disabled = false;
+        });
+        grid.appendChild(pill);
+      });
+      document.getElementById('customDate').addEventListener('input', e=>{
+        document.querySelectorAll('.date-pill').forEach(p=>p.classList.remove('selected'));
+        if(e.target.value){
+          const d = new Date(e.target.value+'T00:00:00');
+          state.dateLabel = `${dow[d.getDay()]}, ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+          document.getElementById('nextBtn').disabled = false;
+        } else {
+          state.dateLabel = null;
+          document.getElementById('nextBtn').disabled = true;
+        }
+      });
+      document.getElementById('nextBtn').addEventListener('click', ()=>{ step=2; render(); });
+    }
+
+    if(step===2){
+      content.innerHTML = `
+        <span class="eyebrow">чудовий вибір</span>
+        <h1>А що будемо<br>робити? 🎀</h1>
+        <p class="sub">${state.dateLabel} — обери формат вечора</p>
+        <div class="activity-grid" id="actGrid"></div>
+        <div class="custom-activity">
+          <input type="text" id="customAct" placeholder="або впиши свою ідею...">
+        </div>
+        <div class="actions">
+          <button class="btn-back" id="backBtn">← Назад</button>
+          <button class="btn-next" id="nextBtn2" disabled>Далі →</button>
+        </div>
+      `;
+      const grid = document.getElementById('actGrid');
+      activities.forEach(a=>{
+        const el = document.createElement('div');
+        el.className='activity';
+        el.innerHTML = `<span class="ico">${a.ico}</span><span class="lbl">${a.label}</span>`;
+        el.addEventListener('click', ()=>{
+          document.querySelectorAll('.activity').forEach(x=>x.classList.remove('selected'));
+          el.classList.add('selected');
+          document.getElementById('customAct').value='';
+          state.activity = a.label;
+          document.getElementById('nextBtn2').disabled = false;
+        });
+        grid.appendChild(el);
+      });
+      document.getElementById('customAct').addEventListener('input', e=>{
+        document.querySelectorAll('.activity').forEach(x=>x.classList.remove('selected'));
+        if(e.target.value.trim()){
+          state.activity = e.target.value.trim();
+          document.getElementById('nextBtn2').disabled = false;
+        } else {
+          state.activity = null;
+          document.getElementById('nextBtn2').disabled = true;
+        }
+      });
+      document.getElementById('backBtn').addEventListener('click', ()=>{ step=1; render(); });
+      document.getElementById('nextBtn2').addEventListener('click', ()=>{ step=3; render(); });
+    }
+
+    if(step===3){
+      content.innerHTML = `
+        <div class="confirm-wrap">
+          <div class="stamp">💖</div>
+          <h1>Домовились!</h1>
+          <p class="sub">Твоє побачення підтверджено</p>
+          <div class="summary">
+            <div class="summary-row"><span class="k">Дата</span><span class="v">${state.dateLabel}</span></div>
+            <div class="summary-row"><span class="k">План</span><span class="v">${state.activity}</span></div>
+          </div>
+          <p class="note">чекатиму з нетерпінням 🥹</p>
+          <div class="actions">
+            <button class="btn-back" id="restartBtn" style="flex:1;">Почати заново</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('restartBtn').addEventListener('click', ()=>{
+        state.dateLabel=null; state.activity=null; step=1; render();
+      });
+
+      sendTelegramNotification(state.dateLabel, state.activity);
+    }
+  }
+
+  render();
+</script>
+
+</body>
+</html>
