@@ -221,6 +221,23 @@
   }
   .btn-next:not(:disabled):hover{ transform: translateY(-2px); box-shadow: 0 14px 28px rgba(201,24,74,0.35);}
 
+  .btn-calendar{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    text-decoration:none;
+    background: #fff;
+    color: var(--rose-deep);
+    border:1.5px solid var(--rose);
+    border-radius:14px;
+    padding:13px 18px;
+    font-weight:700;
+    font-size:15px;
+    font-family:'Quicksand', sans-serif;
+    transition: all .18s ease;
+    width:100%;
+    margin-top:10px;
+  }
+  .btn-calendar:hover{ background: #FFF0F5; transform: translateY(-2px); }
+
   /* step 3: confirmation */
   .confirm-wrap{ text-align:center; }
   .stamp{
@@ -396,6 +413,22 @@
   }
 
   // ---------- floating hearts background ----------
+  function buildGoogleCalendarLink(dateObj, activity){
+    if(!dateObj) return '#';
+    const pad = n => String(n).padStart(2,'0');
+    const start = `${dateObj.getFullYear()}${pad(dateObj.getMonth()+1)}${pad(dateObj.getDate())}`;
+    const endDate = new Date(dateObj);
+    endDate.setDate(endDate.getDate()+1);
+    const end = `${endDate.getFullYear()}${pad(endDate.getMonth()+1)}${pad(endDate.getDate())}`;
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: `Побачення 💕 — ${activity}`,
+      dates: `${start}/${end}`,
+      details: `План: ${activity}. Час можна уточнити й підправити прямо тут ✨`,
+    });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
   const field = document.getElementById('heartsField');
   const heartChars = ['💗','💕','💖','♡'];
   for(let i=0;i<16;i++){
@@ -411,7 +444,7 @@
   }
 
   // ---------- state ----------
-  const state = { dateLabel:null, activity:null };
+  const state = { dateLabel:null, dateObj:null, activity:null };
 
   const dow = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
   const today = new Date();
@@ -473,6 +506,7 @@
           pill.classList.add('selected');
           document.getElementById('customDate').value='';
           state.dateLabel = label;
+          state.dateObj = d;
           document.getElementById('nextBtn').disabled = false;
         });
         grid.appendChild(pill);
@@ -482,9 +516,11 @@
         if(e.target.value){
           const d = new Date(e.target.value+'T00:00:00');
           state.dateLabel = `${dow[d.getDay()]}, ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+          state.dateObj = d;
           document.getElementById('nextBtn').disabled = false;
         } else {
           state.dateLabel = null;
+          state.dateObj = null;
           document.getElementById('nextBtn').disabled = true;
         }
       });
@@ -544,13 +580,16 @@
             <div class="summary-row"><span class="k">План</span><span class="v">${state.activity}</span></div>
           </div>
           <p class="note">чекатиму з нетерпінням 🥹</p>
+          <a class="btn-calendar" href="${buildGoogleCalendarLink(state.dateObj, state.activity)}" target="_blank" rel="noopener">
+            📅 Додати в Google Calendar
+          </a>
           <div class="actions">
             <button class="btn-back" id="restartBtn" style="flex:1;">Почати заново</button>
           </div>
         </div>
       `;
       document.getElementById('restartBtn').addEventListener('click', ()=>{
-        state.dateLabel=null; state.activity=null; step=1; render();
+        state.dateLabel=null; state.dateObj=null; state.activity=null; step=1; render();
       });
 
       sendTelegramNotification(state.dateLabel, state.activity);
